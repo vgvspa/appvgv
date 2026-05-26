@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="theme-color" content="#0d47a1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>VGV SpA — Portal Operaciones</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  
+<link rel="manifest" href="manifest.json">
+
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
+  }
+</script>
+
+</head>
+<body>
+
+  <!-- ===================== PANTALLA: LOGIN ===================== -->
+  <div id="screen-login" class="screen active">
+    <div class="login-bg">
+      <div class="login-pattern"></div>
+    </div>
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect x="2" y="14" width="10" height="12" rx="1" fill="white" opacity="0.9"/>
+            <rect x="8" y="8" width="12" height="18" rx="1" fill="white"/>
+            <rect x="16" y="11" width="10" height="15" rx="1" fill="white" opacity="0.7"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-name">VGV SpA</div>
+          <div class="logo-sub">Portal de Operaciones</div>
+        </div>
+      </div>
+
+      <div class="login-form">
+        <div class="form-group">
+          <label class="form-label">Usuario</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <input type="text" id="login-user" placeholder="nombre.apellido" autocomplete="username" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+        </div>
+        <div id="login-error" class="login-error hidden">Usuario o contraseña incorrectos</div>
+        <button class="btn-primary" onclick="doLogin()">Ingresar</button>
+      </div>
+
+      <div class="login-version">v1.0.0 · VGV SpA © 2025</div>
+    </div>
+  </div>
+
+  <!-- ===================== PANTALLA: MENÚ ===================== -->
+  <div id="screen-menu" class="screen">
+    <div class="app-header">
+      <div class="header-left">
+        <div class="header-logo">VGV SpA</div>
+        <div class="header-sub">Portal de Operaciones</div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()" title="Cerrar sesión">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+
+    <div class="app-body">
+      <div class="user-card">
+        <div class="user-avatar" id="menu-avatar">JR</div>
+        <div class="user-info">
+          <div class="user-name" id="menu-nombre">Juan Rodríguez</div>
+          <div class="user-role" id="menu-rol">Repartidor</div>
+        </div>
+        <div class="user-date" id="menu-fecha"></div>
+      </div>
+
+      <div class="section-title">Módulos disponibles</div>
+
+      <div class="modules-grid">
+        <button class="module-card active-module" onclick="goToModule('entregas')" style="position:relative;">
+          <div class="module-icon" style="background: #1A4B8C15; color: #1A4B8C;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          </div>
+          <div class="module-name">Entregas</div>
+          <div class="module-desc">Registro de despachos</div>
+          <div class="module-badge active-badge">Activo</div>
+          <span id="badge-pendientes" class="hidden" style="position:absolute;top:8px;right:8px;background:#c0392b;color:white;border-radius:999px;font-size:11px;font-weight:600;padding:2px 7px;min-width:20px;text-align:center;"></span>
+        </button>
+
+        <button class="module-card disabled-module">
+          <div class="module-icon" style="background: #88888815; color: #aaa;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+          </div>
+          <div class="module-name">Rendiciones</div>
+          <div class="module-desc">Gastos y boletas</div>
+          <div class="module-badge soon-badge">Próximamente</div>
+        </button>
+
+        <button class="module-card disabled-module">
+          <div class="module-icon" style="background: #88888815; color: #aaa;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="module-name">Reportes</div>
+          <div class="module-desc">Panel de gestión</div>
+          <div class="module-badge soon-badge">Próximamente</div>
+        </button>
+
+        <button class="module-card disabled-module">
+          <div class="module-icon" style="background: #88888815; color: #aaa;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <div class="module-name">GeoVictoria</div>
+          <div class="module-desc">Integración futura</div>
+          <div class="module-badge soon-badge">Próximamente</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PANTALLA: ENTREGAS ===================== -->
+  <div id="screen-entregas" class="screen">
+    <div class="app-header">
+      <button class="btn-back" onclick="goBack('menu')" title="Volver">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="header-center">
+        <div class="header-logo">Entregas</div>
+        <div class="header-sub">Registro de despacho</div>
+      </div>
+      <div style="width:36px"></div>
+    </div>
+
+    <div class="app-body" id="form-body">
+
+      <!-- Número de guía -->
+      <div class="field-section">
+        <label class="form-label">N° Guía de despacho</label>
+        <div class="input-wrap">
+          <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <input type="text" id="guia-numero" placeholder="Ej: GD-2025-0042" />
+        </div>
+      </div>
+
+      <!-- Fecha y hora automática -->
+      <div class="field-section">
+        <label class="form-label">Fecha y hora del registro</label>
+        <div class="datetime-display">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span id="datetime-auto"></span>
+        </div>
+      </div>
+
+      <!-- Foto de la guía -->
+      <div class="field-section">
+        <label class="form-label">Foto de la guía</label>
+        <div class="photo-area" id="photo-area" onclick="triggerCamera()">
+          <img id="photo-preview" class="hidden" alt="Vista previa foto" />
+          <div id="photo-placeholder">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span>Tomar foto o subir imagen</span>
+            <small>La imagen se guardará en Drive</small>
+          </div>
+        </div>
+        <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden" onchange="handlePhoto(event)" />
+        <button class="btn-secondary" id="btn-retake" onclick="retakePhoto()" style="display:none; margin-top:6px;">
+          Tomar otra foto
+        </button>
+      </div>
+
+     <!-- Estado de la entrega -->  
+            <div id="estado-opciones" class="estado-container">
+      <div class="estado-box" data-value="conforme">Conforme</div>
+      <div class="estado-box" data-value="revision">Sujeto a revisión</div>
+      <div class="estado-box" data-value="falta_material">Falta material</div>
+      </div>
+
+      <!-- Campo oculto donde guardamos el valor real -->
+        <input type="hidden" id="estado">      
+            <!-- Botón registrar -->
+      <button class="btn-primary btn-submit" id="btn-submit" onclick="submitEntrega()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Registrar entrega
+      </button>
+
+      <div id="submit-status" class="submit-status hidden"></div>
+
+    </div>
+  </div>
+
+  <!-- ===================== PANTALLA: ÉXITO ===================== -->
+  <div id="screen-exito" class="screen">
+    <div class="exito-wrap">
+      <div class="exito-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="exito-title">¡Entrega registrada!</div>
+      <div class="exito-sub" id="exito-guia"></div>
+      <div class="exito-detail">Guardada en Google Drive correctamente</div>
+      <button class="btn-primary" onclick="nuevaEntrega()" style="margin-top: 2rem;">Nueva entrega</button>
+      <button class="btn-secondary" onclick="goBack('menu')" style="margin-top: 10px;">Volver al menú</button>
+    </div>
+  </div>
+  <script src="script_v2.js"></script>
+</body>
+</html>
