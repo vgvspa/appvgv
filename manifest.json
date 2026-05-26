@@ -2,7 +2,7 @@
   "name": "VGV Entregas",
   "short_name": "VGV App",
   "start_url":"/appvgv/"
-
+  "scope": "/appvgv/"
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0d47a1",
