@@ -1,21 +1,22 @@
 {
   "name": "VGV Entregas",
   "short_name": "VGV App",
-  "start_url":"/appvgv/"
-  "scope": "/appvgv/"
+  "start_url": "/appvgv/",
+  "scope": "/appvgv/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0d47a1",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/appvgv/icon192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "/appvgv/icon512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ]
 }
+
