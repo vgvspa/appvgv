@@ -214,13 +214,9 @@ function showScreen(id) {
 function mostrarMenu() {
   if (!usuarioActivo) return;
 
-  const iniciales = usuarioActivo.nombre
-    .split(" ")
-    .map(p => p[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
+ const iniciales = usuarioActivo.nombre
+  ? usuarioActivo.nombre.split(" ").map(p => p[0]).slice(0, 2).join("").toUpperCase()
+  : "US";
   document.getElementById("menu-avatar").textContent = iniciales;
   document.getElementById("menu-nombre").textContent = usuarioActivo.nombre;
   document.getElementById("menu-rol").textContent    = usuarioActivo.rol;
@@ -327,6 +323,11 @@ function retakePhoto() {
 async function submitEntrega() {
   const guia   = document.getElementById("guia-numero").value.trim();
   const estado = document.getElementById("estado").value;
+  const btn    = document.getElementById("btn-submit");
+  const status = document.getElementById("submit-status");
+
+  // Evitar doble envío
+  if (btn.disabled) return;
 
   if (!guia) {
     alert("Por favor ingresa el número de guía.");
@@ -341,34 +342,40 @@ async function submitEntrega() {
     return;
   }
 
+  // Asegurar formato correcto
+  let foto = fotoBase64;
+  if (foto.startsWith("data:image")) {
+    foto = foto.split(",")[1];
+  }
+
   const payload = {
-    accion:      "registrarEntrega",   // ✅ Corregido — coincide con Code.gs
+    accion: "registrarEntrega",
     guia,
     estado,
-    usuario:     usuarioActivo.nombre,
-    rol:         usuarioActivo.rol,
-    fecha:       new Date().toLocaleDateString("es-CL"),
-    hora:        new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" }),
-    fotoBase64
+    usuario: usuarioActivo.nombre,
+    rol: usuarioActivo.rol,
+    fecha: new Date().toLocaleDateString("es-CL"),
+    hora:  new Date().toLocaleTimeString("es-CL", { hour: "2-digit", minute: "2-digit" }),
+    fotoBase64: foto
   };
-
-  const btn    = document.getElementById("btn-submit");
-  const status = document.getElementById("submit-status");
 
   btn.disabled    = true;
   btn.textContent = "Enviando...";
   status.textContent = "⏳ Guardando...";
   status.classList.remove("hidden");
 
+  // MODO OFFLINE
   if (!hayInternet()) {
     await guardarEntregaOffline(payload);
+    btn.disabled = false;
+    btn.textContent = "Enviar";
     mostrarExito(guia);
     actualizarBadgePendientes();
     return;
   }
 
+  // MODO ONLINE
   try {
-    // ✅ Usa apiPost — sin CORS preflight
     const data = await apiPost(payload);
 
     if (data.ok) {
@@ -376,12 +383,15 @@ async function submitEntrega() {
     } else {
       throw new Error(data.error || "Error desconocido");
     }
+
   } catch (err) {
     // Guarda offline si falla
     await guardarEntregaOffline(payload);
     mostrarExito(guia);
   }
 
+  btn.disabled = false;
+  btn.textContent = "Enviar";
   actualizarBadgePendientes();
 }
 
